@@ -14,11 +14,19 @@ const _BleManager = new BleManager();
 
 const App = () => {
   // render list of bluetooth devices
+  React.useEffect(() => {
+    const subscription = _BleManager.onStateChange((state) => {
+      console.log(state);
+      if (state === 'PoweredOn') {
+        this.scanAndConnect();
+        subscription.remove();
+      }
+    }, true);
+    return () => subscription.remove();
+  }, [_BleManager]);
+
   function openRoof() {
-    BleManager.start({ showAlert: false }).then(() => {
-      // Success code
-      console.log("Module initialized");
-    }); console.log("Opening Roof");
+    console.log("Opening Roof");
   }
   function closeRoof() {
     console.log("Closing Roof");
