@@ -11,9 +11,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true
     },
@@ -31,6 +29,7 @@
       "eas": {
         "projectId": "c8d86397-744a-4fb0-a0c7-49afb94e7d8c"
       }
-    }
+    },
+    "plugins": ["with-rn-bluetooth-classic"]
   }
 }
