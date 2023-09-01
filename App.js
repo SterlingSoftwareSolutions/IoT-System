@@ -9,6 +9,7 @@ import {
   ImageBackground,
   Image,
   PermissionsAndroid,
+  TouchableOpacity,
 } from 'react-native';
 import RNBluetoothClassic, {
   BluetoothDevice
@@ -18,6 +19,7 @@ import RNBluetoothClassic, {
 const App = () => {
   const delay = ms => new Promise(res => setTimeout(res, ms));
   const EXECUTION_TIME = 5000; // milliseconds
+  const DEVICE = '00:19:10:08:4D:6D'
 
   function requestPermissions() {
     PermissionsAndroid.requestMultiple([
@@ -33,30 +35,32 @@ const App = () => {
   }, [])
 
   async function getDevice() {
-    let hc05 = await RNBluetoothClassic.connectToDevice('00:19:10:08:4D:6D');
+    let hc05 = await RNBluetoothClassic.connectToDevice(DEVICE);
     return hc05;
   }
 
   async function openRoof() {
     console.log("Opening Roof");
-    device = await getDevice();
+    let device = await getDevice();
     device.write('1');
-    await delay(EXECUTION_TIME);
-    device.write('0');
   }
 
   async function closeRoof() {
     console.log("Closing Roof");
-    device = await getDevice();
+    let device = await getDevice();
     device.write('2');
-    await delay(EXECUTION_TIME);
+  }
+
+  async function stopRoof() {
+    console.log("Stopping Roof");
+    let device = await getDevice();
     device.write('0');
   }
 
   return (
     <GestureHandlerRootView>
-      <ScrollView>
-        <View style={styles.container}>
+      <ScrollView style={styles.container}>
+        <View style={{ paddingBottom: 100 }}>
           <View style={styles.iconContainer}>
             <Icon name="bell" size={40} color="white" style={styles.bell} />
           </View>
@@ -107,7 +111,34 @@ const App = () => {
             </View>
           </View>
           <View style={styles.horizontal}>
-            <View style={{ width: "33%", padding: 5 }}>
+            <View style={{ width: "100%", padding: 5 }}>
+              <Text style={{ textAlign: 'center', color: 'white', fontSize: 14 }}>Roof</Text>
+              <View style={{ height: 140, borderRadius: 10, overflow: 'hidden', justifyContent: "center", padding: 5, backgroundColor: "#121212", marginTop: 5, borderWidth: 1, borderColor: '#ffffffa0' }}>
+                <View style={styles.horizontal}>
+                  <View style={{alignItems: 'center', width: "50%"}}>
+                    <TouchableOpacity
+                      style={{borderColor: '#ffffffa0', backgroundColor: '#22b044', borderWidth: 1, width: 100, height: 100, borderRadius: 9999, justifyContent: 'center', alignItems: 'center'}}
+                      onPressIn={openRoof}
+                      onPressOut={stopRoof}
+                      >
+                      <Text style={{color: 'white'}}>Open Roof</Text>
+                    </TouchableOpacity>
+                  </View>
+                  <View style={{alignItems: 'center', width: "50%"}}>
+                    <TouchableOpacity
+                      style={{borderColor: '#ffffffa0', backgroundColor: '#ef4422', borderWidth: 1, width: 100, height: 100, borderRadius: 9999, justifyContent: 'center', alignItems: 'center'}}
+                      onPressIn={closeRoof}
+                      onPressOut={stopRoof}
+                      >
+                      <Text style={{color: 'white'}}>Close Roof</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+            </View>
+          </View>
+          <View style={styles.horizontal}>
+            <View style={{ width: "50%", padding: 5 }}>
               <Text style={{ textAlign: 'center', color: 'white', fontSize: 14 }}>Water Tank Motor</Text>
               <View style={{ height: 140, borderRadius: 10, overflow: 'hidden', justifyContent: "flex-end", padding: 5, backgroundColor: "#121212", marginTop: 5, borderWidth: 1, borderColor: '#ffffffa0' }}>
                 <SlideButton
@@ -125,7 +156,7 @@ const App = () => {
                 />
               </View>
             </View>
-            <View style={{ width: "33%", padding: 5 }}>
+            <View style={{ width: "50%", padding: 5 }}>
               <Text style={{ textAlign: 'center', color: 'white', fontSize: 14 }}>Garden Light</Text>
               <View style={{ height: 140, borderRadius: 10, overflow: 'hidden', justifyContent: "flex-end", padding: 5, backgroundColor: "#121212", marginTop: 5, borderWidth: 1, borderColor: '#ffffffa0' }}>
                 <SlideButton
@@ -143,26 +174,6 @@ const App = () => {
                 />
               </View>
             </View>
-            <View style={{ width: "33%", padding: 5 }}>
-              <Text style={{ textAlign: 'center', color: 'white', fontSize: 14 }}>Open Roof</Text>
-              <View style={{ height: 140, borderRadius: 10, overflow: 'hidden', justifyContent: "flex-end", padding: 5, backgroundColor: "#121212", marginTop: 5, borderWidth: 1, borderColor: '#ffffffa0' }}>
-                <SlideButton
-                  title=">>"
-                  icon={
-                    <Image
-                      source={require('./src/images/red_on_off_button.png')}
-                      style={{ width: "75%", height: "75%" }}
-                    />
-                  }
-                  containerStyle={{ backgroundColor: '#ffffffaa' }}
-                  underlayStyle={{ backgroundColor: '#00ff00aa' }}
-                  thumbStyle={{ borderColor: 'red', borderWidth: 2 }}
-                  height="40"
-                  onReachedToEnd={openRoof}
-                  onReachedToStart={closeRoof}
-                />
-              </View>
-            </View>
           </View>
         </View >
       </ScrollView>
@@ -175,7 +186,7 @@ const styles = StyleSheet.create({
     paddingVertical: 30, // Add padding around
     paddingHorizontal: 5, // Add padding around
     backgroundColor: '#424242',
-    height: '100%'
+    height: '100%',
   },
   iconContainer: {
     alignItems: 'flex-end'
